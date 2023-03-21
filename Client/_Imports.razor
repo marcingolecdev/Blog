@@ -1,0 +1,42 @@
+﻿@using System.IO
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Linq
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Components.WebAssembly.Http
+@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.JSInterop
+@using Blazored
+@using Blazored.SessionStorage
+
+
+@*
+    below the paths to the classes that are executed in components and
+     other classes. Without specifying the full path to where you are
+     given class it is not possible to refer to it in a component
+*@
+
+@using Blog.Client
+@using Blog.Client.Shared
+@using Blog.Client.Models
+@using Blog.Client.Services
+@using Blog.Client.Pages
+@using Blog.Client.Pages.Posts
+@using Blog.Shared
+
+
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime js
+@*
+    Global object instance injection, use this instance
+     razor components in which the methods of these objects are called.
+*@
+
+@inject MessageService _messageService
+@inject PostService _postService
+@inject CommentService _commentService 

@@ -1,0 +1,46 @@
+﻿@page "/createMessage"
+
+<h3 class="header">Adding a new news</h3>
+
+<div class="formcreating">
+    <EditForm Model="@message" OnValidSubmit="@onSubmit">
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div style="display: flex; flex-direction: column">
+            <label>Title</label>
+            <InputText @bind-Value="message.Title" />
+            <ValidationMessage For="@(() => message.Title)" />
+
+            <label>Description</label>
+            <InputTextArea @bind-Value="message.Description"></InputTextArea>
+            <ValidationMessage For="@(() => message.Description)" />
+
+        </div>
+        <input type="submit" value="Create" class="buttonAction" />
+    </EditForm>
+</div>
+
+
+@*This is a code that is not displayed directly in the browser, but only its fields, which are included in the attributes of Html tags.
+    For example, the "Model" attribute has the "post" property assigned to it, which in turn consists of several fields, i.e. Title, Description, PostCategory and DateAdded, and these fields are connected to the inputs through the "bind-Value" attribute
+    *@
+@code {
+
+    // Creating an "instance" of the data model according to which the data on the main page will be displayed
+    private Message message = new Message ();
+
+    // The method that is called when the button is pressed is assigned to the "OnSubmit" attribute of the Edit Form, which contains the fields whose values will be saved to the database
+    private async Task onSubmit ()
+    {
+        // calling the method that is responsible for creating a Post in the database. There is code that communicates with the database via HttpClient and this method is called via Dependency Injection, the reference to the class is located in the file "_Imports.razor"
+        await _messageService.CreateMessage(message);
+
+        // creating an empty Post to clear the text fields, thanks to which, after clicking the "Create" button, the text from the edit fields disappears
+        message = new Message();
+
+        // go to the home page
+        NavigationManager.NavigateTo("messages");
+    }
+}

@@ -1,0 +1,73 @@
+﻿@page "/editPost/{Param}"
+
+<h3 class="header">Edit post</h3>
+
+
+<div class="formcreating">
+    <EditForm Model="@post" OnValidSubmit="@onSubmit">
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div style="display: flex; flex-direction: column">
+            <label>Title</label>
+            <InputText @bind-Value="post.Title" />
+            <ValidationMessage For="@(() => post.Title)" /> @*<-- This component is responsible for display
+        message when the criteria are not met
+        related, among others with the required title length. these rules
+        are defined in the attributes of the "Post" class*@
+
+            <label>Description</label>
+            <InputTextArea @bind-Value="post.Description"></InputTextArea>
+            <ValidationMessage For="@(() => post.Description)" />
+
+            <label>Photo</label>
+            <InputText @bind-Value="post.Photo" />
+            <ValidationMessage For="@(() => post.Photo)" />
+
+            <label>Category</label>
+            <InputSelect @bind-Value="post.PostCategory">
+                @foreach (var category in Enum.GetNames(typeof(Category)))
+                {
+                    <option value="@category">@category</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => post.PostCategory)" />
+
+        </div>
+        <input type="submit" value="Zapisz" class="buttonAction" />
+    </EditForm>
+</div>
+
+@code {
+
+    @*
+        The code below says that we will take an Id element from another component and pass it
+         to the "GetPostById()" method to find a single element from the database and edit it
+    *@
+    [Parameter]
+    public string Param { get; set; }
+
+    private Post post = new Post ();
+
+    protected override async Task OnInitializedAsync ()
+    {
+        post = await _postService.GetPostById(Param);
+    }
+
+    private async Task onSubmit ()
+    {
+        await _postService.EditPost(Param, post);
+        NavigationManager.NavigateTo("/");
+    }
+
+}
+
+@*
+    At the top of the page is a parameter that is passed from another component, this parameter
+     is the Id on the basis of which the element is searched for and the action is performed, at the moment
+     when the user presses the "Save" button on the page, after which the user is redirected
+     is on the homepage.
+     The navigation manager instance is defined in "_Imports.razor". Thanks to this nazification
+     we can switch between razor components
+*@

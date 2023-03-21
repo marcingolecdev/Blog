@@ -1,0 +1,39 @@
+﻿@inherits LayoutComponentBase
+
+
+<AuthorizeView>
+    <Authorized>
+
+        <TopMenu />
+        <div class="center-content cztery">
+            <div class="menu-left" style="position: sticky; top: 0px;">
+                <LeftMenu />
+            </div>
+
+            <div class="right">
+                <div class="card">
+                    @Body
+                </div>
+            </div>
+        </div>
+        <FooterComponent />
+
+    </Authorized>
+    <NotAuthorized>
+        <div style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center">
+            <Blog.Client.Pages.Identity.Login />
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@*
+    When the user enters the Blog, the program will check if he is authorized to go to the homepage, if so
+    it will be redirected to the home page. The "Authorized" component is responsible for this
+    if it doesn't redirect it to the login page. The "NotAuthorized" component is responsible for this.
+
+
+    "LayoutComponentBase" contains the property "@Body", this means that all components will be lined here.
+*@
+
+

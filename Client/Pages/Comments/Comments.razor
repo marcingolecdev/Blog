@@ -1,0 +1,33 @@
+﻿@page "/comments"
+
+
+@if (comments != null)
+{
+    <h3>Comments [@comments.Count]</h3>
+    @foreach (var comment in comments)
+    {
+        <p>
+            @comment.Description
+        </p>
+        <p class="dateStyle">
+            @comment.DataDodania
+        </p>
+        <hr />
+    }
+}
+@code {
+
+    [Parameter]
+    public Post post { get; set; }
+    private List<Comment> comments = new List<Comment> ();
+    protected override async Task OnInitializedAsync ()
+    {
+        if (post != null)
+        {
+            comments = (await _commentService.GetAllComments())
+                //.Where(w => w.PostId == PostId)
+                .ToList();
+        }
+
+    }
+}

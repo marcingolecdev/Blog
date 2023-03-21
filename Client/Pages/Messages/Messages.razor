@@ -1,0 +1,58 @@
+﻿@page "/messages"
+
+
+@if (messages != null)
+{
+    <h3>Lates news (@messages.Count)</h3>
+
+    foreach (var message in messages)
+    {
+        <div class="messagesStyle">
+            <p class="titleStyle">
+                @message.Title
+            </p>
+            <p class="dateStyle">
+                @message.DataDodania
+            </p>
+            <p class="descriptionStyle">
+                @message.Description
+            </p>
+            <AuthorizeView Roles="Administrator">
+                <Authorized>
+                    <div class="df-e">
+                        <NavLink href='@Path.Combine("deleteMessage", message.Id)' class="deleteLink">Delete</NavLink>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+    }
+}
+
+@code {
+
+    private List<Message> messages { get; set; }
+    protected override async Task OnInitializedAsync ()
+    {
+        messages = await _messageService.GetAllMessages();
+        messages.OrderByDescending(o => o.DataDodania);
+    }
+
+}
+
+@*
+    At the beginning, the routing is defined, which tells where the component is located,
+       to be able to refer to this component from another component, we enter in it, for example, a tag
+       "<a href='messages' ">messages</a>", where after clicking on this link we will be redirected to this
+       component. In the next line there is a condition that will be executed when the value of the "messages" object
+       will not be empty, then there is a loop that displays all the messages in the "messages" list,
+       which is defined in the place where you enter the backend code that the browser does not see.
+       For the messages to be fetched, refer to the GetAllMessages() method that communicates
+       with the api interface of the "News.Api" service. An instance of this service is defined in the file "_Imports.razor"
+       (@inject MessageService _messageService)
+       Defining instances in this site means that we may have access to them
+       from each razor component, since it's a file, it's global.
+       the "messages" object also has the "OrderByDescending()" method assigned to it, this means that before displaying the object
+       This list is sorted in ascending order by added date.
+       In this component there is also the "AuthorizeView" class with roles, which means that only the user with the role indicated
+       in the "Roles" field will have access to the code between the "<Authorized>" tags
+*@

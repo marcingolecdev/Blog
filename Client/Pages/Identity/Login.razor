@@ -1,0 +1,51 @@
+﻿@page "/login"
+@inject AuthenticationStateProvider authStateProvider
+
+
+<EditForm Model="loginRequest" OnValidSubmit="Authenticate">
+    <div class="form-group">
+        <label>Email</label>
+        <InputText @bind-Value="loginRequest.Email" />
+    </div>
+    <div class="form-group">
+        <label>Hasło</label>
+        <InputText @bind-Value="loginRequest.Password" />
+    </div>
+    <input type="submit" value="Login" class="buttonAction" style="float: right;" />
+</EditForm>
+
+
+@code {
+
+    @*
+        We enter the data needed to log in in advance so that we do not have to re-enter them when logging in, this is only useful when testing the application.
+    *@
+    private LoginRequest loginRequest = new LoginRequest () { Email = "admin@admin.pl", Password = "SDG%$@5423sdgagSDert" };
+
+    @*
+        The following method contacts the "AccountControler" of the "Blazor.Server" application and the method
+         "PostAsJsonAsync()" will send a request from logging into the system. There is a method that checks
+         whether the user exists in the database, if so, the result about the existing user is returned,
+         his email, role to the "userSession" variable. Then the "UpdateAuthenticationState()" method is called
+         belonging to "authStateProvider" which adds information to the memory about the logged in user
+         and on the basis of the data contained therein, it assigns access to individual parts of the system.
+         Then the user is redirected to the home page.
+    *@
+    private async Task Authenticate ()
+    {
+        var loginResult = await HttpClient.PostAsJsonAsync <LoginRequest> ("/api/Account/Login", loginRequest);
+        if (loginResult.IsSuccessStatusCode)
+        {
+            var userSession = await loginResult.Content.ReadFromJsonAsync <UserSession> ();
+            var customAuthStateProvider = (CustomAuthenticationStateProvider) authStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(userSession);
+            NavigationManager.NavigateTo("/", true);
+        }
+        else
+        {
+            await js.InvokeVoidAsync("alert", "Błędny login lub hasło");
+        }
+
+    }
+
+}

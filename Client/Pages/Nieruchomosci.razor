@@ -1,0 +1,18 @@
+﻿@page "/nieruchomosci"
+
+
+@if (nieruchomosciPosts != null)
+{
+    <h3 class="header">Garden (@nieruchomosciPosts.Count)</h3>
+    <DisplayPosts Posts="nieruchomosciPosts" />
+}
+
+@code {
+    private List<Post> nieruchomosciPosts { get; set; }
+    protected override async Task OnInitializedAsync ()
+    {
+        nieruchomosciPosts = (await _postService.GetAllPosts())
+        .Where(w => w.PostCategory == Category.Nieruchomosci)
+        .ToList();
+    }
+}

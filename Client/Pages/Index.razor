@@ -1,0 +1,26 @@
+﻿@page "/"
+
+
+@if (posts != null)
+{
+    <h3 class="header">Posts (@posts.Count)</h3>
+    <DisplayPosts Posts="posts" />
+}
+
+@code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+
+    private List<Post> posts { get; set; }
+    protected override async Task OnInitializedAsync ()
+    {
+        posts = await _postService.GetAllPosts();
+    }
+}
+
+@*
+    Thanks to "authenticationState" we can check the status of the logged in user,
+     i.e. e.g. his email or roles.
+*@

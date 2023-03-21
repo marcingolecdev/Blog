@@ -1,0 +1,58 @@
+﻿@inject AuthenticationStateProvider authenticationStateProvider
+
+<section class="header3">
+    <div class="center-content row"
+         style="justify-content: space-between;">
+        <div>
+            <NavLink href="/" style="font-size: 40px; font-weight: bold">
+                Blog - final work
+            </NavLink>
+        </div>
+        <div>
+
+            <AuthorizeView Roles="Administrator">
+                <Authorized>
+                    <NavLink class="top-link" href="createPost">Add Post</NavLink>
+                    <NavLink class="top-link" href="createMessage">Add News</NavLink>
+                    <NavLink @onclick="Logout" href="javascript:void(0)" class="top-link">Logout</NavLink>
+                    <NavLink class="top-link" href="register">Register</NavLink>
+                </Authorized>
+            </AuthorizeView>
+
+            <AuthorizeView Roles="User">
+                <Authorized>
+                    <NavLink @onclick="Logout" href="javascript:void(0)" class="top-link">Logout</NavLink>
+                </Authorized>
+            </AuthorizeView>
+
+        </div>
+    </div>
+</section>
+
+@code {
+    private async Task Logout ()
+    {
+        await (authenticationStateProvider as CustomAuthenticationStateProvider).UpdateAuthenticationState(null);
+        NavigationManager.NavigateTo("/", true);
+    }
+}
+
+@*
+    The top menu of the page, here the user's authorization is checked, when he enters this page and they are checked
+    his roles. Each user in this system is assigned a role and it is either "Administrator",
+    or "User", roles are assigned upon registration of a new user. The method responsible for the registration
+    user is placed in the "AccountController" of the "Blazor.Server" application and is called
+    in this app "Blazor.Client" via HttpClient.
+
+    At the very top of the page is an injection of the "authenticationStateProvider" class.
+
+
+    QUOTE - source: https://learn.microsoft.com/pl-pl/aspnet/core/blazor/security/?view=aspnetcore-7.0
+    "AuthenticationStateProvider is the core service used by the AuthorizeView component and the CascadingAuthenticationState component to obtain the user's authentication state.
+    Typically, you don't use AuthenticationStateProvider directly. Use methods using the AuthorizeView component."
+
+
+    Then the program checks in "AuthorizeView" what role the user has and displays it based on this role
+    relevant content.
+*@
+

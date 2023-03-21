@@ -1,0 +1,14 @@
+﻿@page "/deleteMessage/{Param}"
+
+<h3>Deleting...</h3>
+
+@code {
+    [Parameter]
+    public string Param { get; set; }
+    protected override async Task OnInitializedAsync ()
+    {
+        await _messageService.DeleteMessage(Param);
+        NavigationManager.NavigateTo("messages");
+    }
+
+}

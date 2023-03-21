@@ -1,0 +1,19 @@
+﻿@page "/sport"
+
+@if (sportPosts != null)
+{
+    <h3 class="header">Sport (@sportPosts.Count)</h3>
+
+    <DisplayPosts Posts="sportPosts" />
+}
+
+@code {
+    private List<Post> sportPosts { get; set; }
+    protected override async Task OnInitializedAsync ()
+    {
+        sportPosts = (await _postService.GetAllPosts())
+        .Where(w => w.PostCategory == Category.Sport)
+        .ToList();
+    }
+}
+ 

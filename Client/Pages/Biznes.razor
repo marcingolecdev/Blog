@@ -1,0 +1,26 @@
+﻿@page "/biznes"
+@*
+    Views are authorized, which means that not everyone has access to them.
+     To access them, you must log in with the appropriate permissions. If the login user
+     will have administrative rights will gain access to the ability to add, delete and edit entries. The others will
+     they could only browse the entries.
+     This is the responsibility of the AutorizeView component with the Roles property, which can have two types of permissions: administrator and user.
+     Permission types are defined in the database
+*@
+
+@if (biznesPosts != null)
+{
+    <h3 class="header">Biznes (@biznesPosts.Count)</h3>
+    <DisplayPosts Posts="biznesPosts" />
+}
+
+
+@code {
+    private List<Post> biznesPosts { get; set; }
+    protected override async Task OnInitializedAsync ()
+    {
+        biznesPosts = (await _postService.GetAllPosts())
+        .Where(w => w.PostCategory == Category.Biznes)
+        .ToList();
+    }
+}

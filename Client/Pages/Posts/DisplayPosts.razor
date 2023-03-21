@@ -1,0 +1,89 @@
+﻿@page "/displayPosts"
+@*
+    A universal component for displaying Posts, it is used on many subpages such as Details or displayAll, it reduces the amount of code and repetition
+*@
+
+@if (Posts != null)
+{
+
+    <div class="db">
+
+        @*
+            The "foreach" loop displays all items that have been added to the "Posts" field in another controller
+               e.g. in "Wiadomosci.razor" or "Sport.razor"
+        *@
+        @foreach (var post in Posts)
+        {
+            <div class="messagesStyle">
+                <div class="df">
+                    <div class="underImage">
+                        <div class="underImage">
+                            <img src="@post.Photo" class="imageStyle" />
+                        </div>
+                    </div>
+
+                    <div class="rightColumn">
+                        <p class="titleStylePost">
+                            @post.Title
+                        </p>
+                        <p class=".dateStylePost">
+                            @post.DataDodania
+                        </p>
+                        @if (post.Description.Length > 200)
+                        {
+                            <NavLink class="card-link-hover descriptionStylePost" href='@Path.Combine("detailsPost",post.PostId)'>@post.Description.Substring(0, 200)</NavLink>
+                        }
+                        @if (post.Description.Length < 200)
+                        {
+                            <NavLink class="card-link-hover descriptionStylePost" href='@Path.Combine("detailsPost",post.PostId)'>@post.Description</NavLink>
+                        }
+
+
+                        @*
+                            Adding the below component in this component says "AuthorizeView", will allow
+                            to content posted in "Authorized" only users with "Administrator" rights
+                        *@
+
+                        <AuthorizeView Roles="Administrator">
+                            <Authorized>
+                                <div class="df-e">
+                                    <NavLink class="card-link-hover deleteLink" href='@Path.Combine("deletePost",post.PostId)'>Delete</NavLink>
+                                    <NavLink class="card-link-hover editLink" href='@Path.Combine("editPost",post.PostId)'>Edit</NavLink>
+                                </div>
+                            </Authorized>
+                        </AuthorizeView>
+
+                    </div>
+                </div>
+            </div>
+
+
+        }
+    </div>
+
+
+}
+else
+{
+    <p>
+        Loading data...
+    </p>
+}
+
+@code {
+    [Parameter]
+    public List<Post> Posts { get; set; }
+
+    @*
+        This method is executed at the time of page load, when all "Post" items will be
+           are sorted and displayed on the page, sorted by date added.
+    *@
+    protected override void OnInitialized ()
+    {
+        if (Posts != null)
+        {
+            Posts.OrderByDescending(o => o.DataDodania);
+        }
+    }
+}
+

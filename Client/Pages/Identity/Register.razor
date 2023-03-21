@@ -1,0 +1,32 @@
+﻿@page "/register"
+
+
+<br />
+<EditForm Model="register" OnValidSubmit="RegisterUser">
+    <div class="form-group">
+        <InputText @bind-Value="register.Email" />
+    </div>
+    <div class="form-group">
+        <InputText @bind-Value="register.Password" />
+    </div>
+    <input type="submit" value="Register" class="buttonAction" />
+</EditForm>
+
+
+
+@code {
+
+    RegisterRequest register = new RegisterRequest () { Password = "SDG%$@5423sdgagSDert" };
+    private async Task RegisterUser ()
+    {
+        await HttpClient.PostAsJsonAsync<RegisterRequest>("api/account/register", register);
+    }
+}
+
+@*
+    The component responsible for registering new users. This is how the user enters the page
+        and enters data into the fields from which information is read and transferred to the controller through the method
+        "PostAsJsonAsync()", which connects to this controller via api, resulting in writing a new
+        user in the database.
+        The controller is in the "Blazor.Server" server application.
+*@

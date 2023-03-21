@@ -1,0 +1,32 @@
+﻿@page "/wiadomosci"
+
+@if (wiadomosciPosts != null)
+{
+    <h3 class="header">Fashion (@wiadomosciPosts.Count)</h3>
+
+    <DisplayPosts Posts="wiadomosciPosts" />
+}
+
+@code {
+
+    private List<Post> wiadomosciPosts { get; set; }
+    protected override async Task OnInitializedAsync ()
+    {
+        wiadomosciPosts = (await _postService.GetAllPosts())
+        .Where(w => w.PostCategory == Category.Wiadomosci)
+        .ToList();
+    }
+
+}
+
+@*
+        This component uses another component "DisplayPosts", which is used in others
+        places, it is responsible for displaying elements from the database that have been assigned to the "Posts" parameter.
+        This was done to eliminate unnecessary code repetition in many places.
+
+        At the top of the document, a condition is defined that tells you to display what is
+        in its braces "{" and "}" only when the value of "messagesPosts" is not null, and it will not be null if
+        data that are downloaded from the database via the "PostService" service will be assigned to it. For downloading
+        all posts correspond to the method "GetAllPosts()", which is defined there. We also see here that
+        the "Where" filter is used, which extracts only those elements from the database that are in the "News" category.
+    *@

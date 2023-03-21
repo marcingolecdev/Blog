@@ -1,0 +1,24 @@
+﻿@page "/deletePost/{Param}"
+
+<h3>Deleting...</h3>
+
+@code {
+
+    [Parameter]
+    public string Param { get; set; }
+    public List <Comment> comments = new List<Comment> ();
+    protected override async Task OnInitializedAsync ()
+    {
+        @*
+            Before you can delete a post without error, you must first remove all comments from it
+              which are associated with it, so first we find all comments that are assigned to it
+              and then we delete them using the DeleteNecessary() method, and then we delete the post
+              and go to the home page.
+        *@
+        comments = await _commentService.GetCommentsFromPost(Param);
+        await _commentService.DeleteNecessary(comments);
+
+        await _postService.DeletePost(Param);
+        NavigationManager.NavigateTo("/");
+    }
+}

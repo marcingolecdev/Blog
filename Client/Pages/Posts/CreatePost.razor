@@ -1,0 +1,72 @@
+﻿@page "/createPost"
+
+<h3 class="header">Adding a new post</h3>
+
+<div class="formcreating">
+    <EditForm Model="@post" OnValidSubmit="@onSubmit">
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div style="display: flex; flex-direction: column">
+            <label>Title</label>
+            <InputText @bind-Value="post.Title" />
+            <ValidationMessage For="@(() => post.Title)" />
+
+            <label>Description</label>
+            <InputTextArea @bind-Value="post.Description"></InputTextArea>
+            <ValidationMessage For="@(() => post.Description)" />
+
+            <label>Photo</label>
+            <InputText @bind-Value="post.Photo" />
+            <ValidationMessage For="@(() => post.Photo)" />
+
+            <label>Category</label>
+            <InputSelect @bind-Value="post.PostCategory">
+                @foreach (var category in Enum.GetNames(typeof(Category)))
+                {
+                    <option value="@category">@category</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => post.PostCategory)" />
+
+        </div>
+        <input type="submit" value="Create" class="buttonAction" />
+    </EditForm>
+</div>
+
+
+@*
+    Below is the code that is not displayed directly in the browser, but only its fields,
+     which are included in the attributes of HTML tags. For example, the attribute "Model" has a property assigned to it
+     "post", which in turn consists of several fields, i.e. Title, Description, PostCategory and DataDodania
+     and these fields are linked to the inputs via the "bind-Value" attribute
+*@
+@code {
+
+    private Post post = new Post ();
+
+    @*
+        The method that is called when the button is pressed is assigned to the "OnSubmit" attribute
+         Edit Form, which contains fields whose values will be saved to the database
+    *@
+    private async Task onSubmit ()
+    {
+        @*
+            calling the method that is responsible for creating a Post in the database. There is a code that
+              communicates with the database through HttpClient and this method is called via
+              Dependency Injection, class reference is located in "_Imports.razor" file
+        *@
+        await _postService.CreatePost(post);
+
+        @*
+            creating an empty Post to clear the fields of text, thanks to which you click on the button
+                "Create" text from edit fields disappears
+        *@
+    post = new Post();
+
+    // go to the home page
+    NavigationManager.NavigateTo("/");
+}
+
+}

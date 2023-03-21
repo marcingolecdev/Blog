@@ -1,0 +1,103 @@
+﻿@page "/detailsPost/{Param}"
+
+
+@if (post != null)
+{
+    <h3 class="header">@post.Title</h3>
+    <p class="dateStyle">@post.DataDodania</p>
+
+    <div class="imageDetails">
+        <img src="@post.Photo" />
+    </div>
+    <p>
+        @post.Description
+    </p>
+
+}
+
+
+<hr />
+<p class="header">Comments (@comments.Count)</p>
+
+@foreach (var c in comments)
+{
+    <hr />
+    <div style="position: relative;">
+        <p>
+            @c.Description
+        </p>
+        <p class="dateStyle">
+            Data dodania: @c.DataDodania
+        </p>
+
+        @*
+            Authorized view available only to the administrator, its content allows you to delete the post.
+        *@
+        <AuthorizeView Roles="Administrator">
+            <Authorized>
+                <div class="crudLinks" style="position: absolute; top: 0; right: 0;">
+                    <NavLink href='@Path.Combine("deleteComment",c.CommentId)' class="dateStylePost">Delete</NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+    </div>
+}
+
+@*
+    The form responsible for adding comments to the post
+*@
+<EditForm Model="comment" OnSubmit="onSubmit" class="commentForm">
+    <div style="display: flex; flex-direction: column">
+        <InputTextArea @bind-Value="comment.Description"></InputTextArea>
+    </div>
+    <input type="submit" value="Dodaj komentarz" class="buttonAction" />
+</EditForm>
+
+@code {
+
+    @*
+        The "public" and "private" modifiers mean that the methods will be available either publicly or privately.
+         only within the "DetailsPost.razor" document and nowhere else, but in the case of
+         With the "public" modifier, the property will be visible in other documents.
+         And they are used depending on the needs, because we don't always want to
+         make all fields, properties or methods publicly available.
+    *@
+    [Parameter]
+    public string Param { get; set; }
+    private Post post { get; set; }
+    private Comment comment { get; set; }
+    private List<Comment> comments = new List<Comment>();
+
+    @*
+        When the page is loaded, data is assigned to the variables, i.e. the post is fetched
+            based on "Param", which is the Id, and then into the "comments" variable fetched
+            are all comments that have been added to a given post.
+    *@
+    protected override async Task OnInitializedAsync ()
+    {
+        comment = new Comment();
+        post = await _postService.GetPostById(Param);
+        comments = await _commentService.GetCommentsFromPost(Param);
+    }
+
+
+    @*
+        The following action is performed when the user presses the "Add comment" button.
+           The "CreateComment()" method is responsible for adding a comment to the database, and then the user is redirected
+           to the subpage where he posted the comment
+    *@
+    private async Task onSubmit ()
+    {
+        if (comment != null)
+        {
+            comment.CommentId = Guid.NewGuid().ToString();
+            comment.DataDodania = DateTime.Now.ToString();
+            comment.PostId = Param;
+            await _commentService.CreateComment(comment);
+            NavigationManager.NavigateTo("detailsPost");
+            NavigationManager.NavigateTo("detailsPost/" + Param);
+        }
+    }
+
+
+}
